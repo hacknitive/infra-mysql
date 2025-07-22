@@ -19,4 +19,4 @@ services:
       retries: ${HEALTHCHECK_RETRIES}
       
     volumes:
-      - ./mysql:/var/lib/mysql
+      - "${MOUNT_PATH_FOR_VAR_LIB_MYSQL}:/var/lib/mysql"

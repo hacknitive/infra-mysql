@@ -6,7 +6,7 @@ This repository provides a ready-to-use Docker Compose configuration for deployi
 
 - **Containerized MySQL Instance:** Quickly spin up a MySQL server using Docker.
 - **Customizable Settings:** Configure all MySQL settings (credentials, database name, ports, etc.) using environment variables.
-- **Persistent Data Storage:** The MySQL data is stored in a local volume (`./mysql`), ensuring persistence across container restarts.
+- **Persistent Data Storage:** The MySQL data is stored on your host at the path defined in the `MOUNT_PATH_FOR_VAR_LIB_MYSQL` variable (by default, `./mysql`), ensuring persistence across container restarts.
 - **Built-in Health Checks:** Automatic health checks using `mysqladmin` ensure the MySQL service is running correctly.
 - **Easy Orchestration:** Leverage Docker Compose for simple startup and teardown processes.
 
@@ -40,48 +40,48 @@ An example environment configuration is provided in the `.env.example` file. To 
    - Docker image settings (e.g., MySQL version)
    - MySQL credentials (e.g., root password, user, and database names)
    - Port configuration
+   - Volume mount for data persistence (`MOUNT_PATH_FOR_VAR_LIB_MYSQL`)
    - Health check parameters
    - Miscellaneous settings (e.g., timezone)
 
 ### 3. Start the MySQL Container
 
-Run the following command to start the container in detached mode:
-
+Run the following command to start the container in detached mode. Notice that the `--env-file` flag ensures that Docker Compose loads your environment variables properly:
 ```bash
 docker-compose --env-file .env up -d
 ```
-
 The MySQL container will start using the settings defined in your `.env` file.
 
 ## Environment Variables
 
 The following key environment variables are defined in the `.env.example` file:
 
-| Variable                     | Description                                                                 | Example / Default Value                           |
-| ---------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------- |
-| `ENV_FILE`                   | Relational or absolute path of the env file.                                | `.env`                                            |
-| `DOCKER_IMAGE_NAME`          | Docker image name for MySQL.                                                | `mysql:8.4`                                       |
-| `MYSQL_ROOT_PASSWORD`        | Password for the MySQL root user.                                           | `my_root_password`                                |
-| `MYSQL_RANDOM_ROOT_PASSWORD` | When set to `yes`, generates a random root password.                        | `no`                                              |
-| `MYSQL_ONETIME_PASSWORD`     | Forces a password change at first login when set to `yes`.                  | `no`                                              |
-| `MYSQL_DATABASE`             | Default database to be created at container startup.                      | `example_db`                                      |
-| `MYSQL_USER`                 | Name of the non-root MySQL user to create.                                  | `example_user`                                    |
-| `MYSQL_PASSWORD`             | Password for the non-root MySQL user defined above.                         | `example_password`                                |
-| `MYSQL_ROOT_HOST`            | Controls which hosts can connect as root (e.g., `%` allows connections from any host).   | `%`                                   |
-| `MYSQL_INITDB_SKIP_TZINFO`   | If set to `yes`, skips importing timezone info into MySQL.                  | `no`                                              |
-| `INTERNAL_PORT`              | Port number inside the container where MySQL listens.                       | `3306`                                            |
-| `EXTERNAL_PORT`              | Port number exposed on the host that maps to the container’s MySQL port.      | `3306`                                            |
-| `CONTAINER_RESTART`          | Docker restart policy (e.g., `unless-stopped`, `always`).                   | `unless-stopped`                                  |
-| `HEALTHCHECK_TEST`           | Health check command using `mysqladmin` to confirm MySQL is running.        | `mysqladmin ping -h localhost --silent`           |
-| `HEALTHCHECK_INTERVAL`       | Interval between consecutive health check attempts.                       | `30s`                                             |
-| `HEALTHCHECK_TIMEOUT`        | Maximum time allowed for a single health check attempt.                     | `10s`                                             |
-| `HEALTHCHECK_RETRIES`        | Number of failed health checks before the container is marked as unhealthy.   | `3`                                               |
-| `TZ`                         | Timezone for the container (e.g., `UTC`, `America/New_York`).               | `UTC`                                             |
-| `MYSQL_ALLOW_EMPTY_PASSWORD` | Allows MySQL to run with an empty root password (not recommended for production). | `no`                                         |
+| Variable                         | Description                                                                          | Example / Default Value          |
+| -------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------- |
+| `ENV_FILE`                       | Relational or absolute path of the env file.                                         | `.env`                           |
+| `DOCKER_IMAGE_NAME`              | Docker image name for MySQL.                                                         | `mysql:8.4`                      |
+| `MYSQL_ROOT_PASSWORD`            | Password for the MySQL root user.                                                    | `my_root_password`               |
+| `MYSQL_RANDOM_ROOT_PASSWORD`     | When set to `yes`, generates a random root password.                                 | `no`                             |
+| `MYSQL_ONETIME_PASSWORD`         | Forces a password change at first login when set to `yes`.                           | `no`                             |
+| `MYSQL_DATABASE`                 | Default database to be created at container startup.                               | `example_db`                     |
+| `MYSQL_USER`                     | Name of the non-root MySQL user to create.                                           | `example_user`                   |
+| `MYSQL_PASSWORD`                 | Password for the non-root MySQL user defined above.                                  | `example_password`               |
+| `MYSQL_ROOT_HOST`                | Controls which hosts can connect as root (e.g., `%` allows connections from any host). | `%`                          |
+| `MYSQL_INITDB_SKIP_TZINFO`       | If set to `yes`, skips importing timezone info into MySQL.                           | `no`                             |
+| `INTERNAL_PORT`                  | Port number inside the container where MySQL listens.                                | `3306`                           |
+| `EXTERNAL_PORT`                  | Port number exposed on the host that maps to the container’s MySQL port.               | `3306`                           |
+| `CONTAINER_RESTART`              | Docker restart policy (e.g., `unless-stopped`, `always`).                            | `unless-stopped`                 |
+| `MOUNT_PATH_FOR_VAR_LIB_MYSQL`   | Host directory path for persisting MySQL data.                                       | `./mysql`                        |
+| `HEALTHCHECK_TEST`               | Health check command using `mysqladmin` to confirm MySQL is running.                  | `mysqladmin ping -h localhost --silent` |
+| `HEALTHCHECK_INTERVAL`           | Interval between consecutive health check attempts.                                | `30s`                            |
+| `HEALTHCHECK_TIMEOUT`            | Maximum time allowed for a single health check attempt.                              | `10s`                            |
+| `HEALTHCHECK_RETRIES`            | Number of failed health checks before the container is marked as unhealthy.            | `3`                              |
+| `TZ`                           | Timezone for the container (e.g., `UTC`, `America/New_York`).                         | `UTC`                            |
+| `MYSQL_ALLOW_EMPTY_PASSWORD`     | Allows MySQL to run with an empty root password (not recommended for production).      | `no`                             |
 
 ## Data Persistence
 
-The MySQL data directory is mounted from the host directory (`./mysql`) to the container's `/var/lib/mysql`. This setup ensures that your data remains intact even if the container is restarted or removed.
+The MySQL data directory is mounted from the host directory to the container's `/var/lib/mysql`. **Note:** The host directory is defined by the `MOUNT_PATH_FOR_VAR_LIB_MYSQL` variable in your `.env` file (default is `./mysql`). This setup ensures that your data remains intact even if the container is restarted or removed.
 
 ## Health Check Details
 
@@ -95,29 +95,26 @@ The Docker Compose configuration includes a health check to ensure that the MySQ
 ## Stopping the Container
 
 To stop the container without removing it, run:
-
 ```bash
 docker-compose --env-file .env stop
 ```
 
 To stop and remove the container (and optionally its associated volumes), execute:
-
 ```bash
-docker-compose  --env-file .env down       # Stops and removes containers
-docker-compose  --env-file .env down -v    # Stops, removes containers, and removes volumes
+docker-compose --env-file .env down       # Stops and removes containers
+docker-compose --env-file .env down -v    # Stops, removes containers, and removes volumes
 ```
 
 ## Logs and Troubleshooting
 
 For viewing container logs, use:
-
 ```bash
-docker-compose  --env-file .env logs mysql
+docker-compose --env-file .env logs mysql
 ```
 
 If you encounter issues:
 - Verify your environment variables in the `.env` file.
-- Check that the `./mysql` directory has the required permissions.
+- Check that the directory defined in `MOUNT_PATH_FOR_VAR_LIB_MYSQL` has the required permissions.
 - Review the logs for any specific error messages.
 
 ## Customization
