@@ -59,6 +59,7 @@ The following key environment variables are defined in the `.env.example` file:
 
 | Variable                     | Description                                                                 | Example / Default Value                           |
 | ---------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------- |
+| `ENV_FILE`                   | Relational or absolute path of the env file.                                | `.env`                                            |
 | `DOCKER_IMAGE_NAME`          | Docker image name for MySQL.                                                | `mysql:8.4`                                       |
 | `MYSQL_ROOT_PASSWORD`        | Password for the MySQL root user.                                           | `my_root_password`                                |
 | `MYSQL_RANDOM_ROOT_PASSWORD` | When set to `yes`, generates a random root password.                        | `no`                                              |
