@@ -1,0 +1,26 @@
+services:
+  mysql:
+    image: "${DOCKER_IMAGE_NAME}"
+    container_name: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD}"
+      - MYSQL_RANDOM_ROOT_PASSWORD="${MYSQL_RANDOM_ROOT_PASSWORD}"
+      - MYSQL_ONETIME_PASSWORD="${MYSQL_ONETIME_PASSWORD}"
+      - MYSQL_DATABASE="${MYSQL_DATABASE}"
+      - MYSQL_USER="${MYSQL_USER}"
+      - MYSQL_PASSWORD="${MYSQL_PASSWORD}"
+      - MYSQL_ROOT_HOST="${MYSQL_ROOT_HOST}"
+      - MYSQL_INITDB_SKIP_TZINFO="${MYSQL_INITDB_SKIP_TZINFO}"
+      - MYSQL_ALLOW_EMPTY_PASSWORD="${MYSQL_ALLOW_EMPTY_PASSWORD}"
+      - TZ="${TZ}"
+    command: ["mysqld", "--port=${INTERNAL_PORT}"]
+    ports:
+      - "${EXTERNAL_PORT}:${INTERNAL_PORT}"
+    volumes:
+      - ./mysql:/var/lib/mysql
+    restart: ${CONTAINER_RESTART}
+    healthcheck:
+      test: ["CMD-SHELL", "${HEALTHCHECK_TEST}"]
+      interval: ${HEALTHCHECK_INTERVAL}
+      timeout: ${HEALTHCHECK_TIMEOUT}
+      retries: ${HEALTHCHECK_RETRIES}
