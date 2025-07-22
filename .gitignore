@@ -4,3 +4,4 @@
 .vscode/
 venv/
 mysql/
+automatic_git_status_add_commit_push.sh
